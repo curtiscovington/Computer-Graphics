@@ -10,13 +10,13 @@ VAO::VAO()
 void VAO::LinkAttrib(VBO& vbo, GLuint index, GLint size, GLenum type, GLsizei stride, GLvoid* offset)
 {
     // Bind the VBO
-    vbo.Bind();
+    // vbo.Bind();
     // Link the VBO to the VAO
     glVertexAttribPointer(index, size, type, GL_FALSE, stride, offset);
     // Enable the VBO
     glEnableVertexAttribArray(index);
     // // Unbind the VBO
-    vbo.Unbind();
+    // vbo.Unbind();
 }
 
 void VAO::Bind()

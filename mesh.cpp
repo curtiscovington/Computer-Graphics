@@ -1,7 +1,8 @@
 #include "mesh.h"
 #include "ebo.h"
 #include <stdio.h>
-
+VBO* vbo;
+EBO* ebo;
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices)
 {
     m_vertices = vertices;
@@ -21,32 +22,29 @@ Mesh::Mesh(Vertex vertices[], std::vector<GLuint> indices)
 void Mesh::Init()
 {
     m_vao.Bind();
-
-    VBO vbo(m_vertices);
-    EBO ebo(m_indices);
+    vbo = new VBO(m_vertices);
+    ebo = new EBO(m_indices);
+    // VBO vbo(m_vertices);
+    // EBO ebo(m_indices);
     
-    m_vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, position));
-    m_vao.LinkAttrib(vbo, 1, 4, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color));
-    m_vao.LinkAttrib(vbo, 2, 3, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal));
+    m_vao.LinkAttrib(*vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, position));
+    m_vao.LinkAttrib(*vbo, 1, 4, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color));
+    m_vao.LinkAttrib(*vbo, 2, 3, GL_FLOAT, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal));
 
-    vbo.Bind();
 
     
 
     m_vao.Unbind();
-    vbo.Unbind();
-    ebo.Unbind();
-    m_vao.Bind();
-    // check what vbo is bound
-    GLint i;
-    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &i);
-    printf("VBO ID: %d\n", i);
+    // vbo.Unbind();
+    // ebo.Unbind();
 }
 
 void Mesh::Draw(Shader& shader, const glm::mat4& viewProjectionMatrix)
 {
     shader.Bind();
     m_vao.Bind();
+    vbo->Bind();
+    ebo->Bind();
     shader.SetUniform("u_viewProjection", viewProjectionMatrix);
     // check what vbo is bound
     // GLint i;
