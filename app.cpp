@@ -48,9 +48,8 @@ void App::Run()
     printf("GL_VENDOR: %s\n", glGetString(GL_VENDOR));
     printf("GL_RENDERER: %s\n", glGetString(GL_RENDERER));
 
-
+    glEnable(GL_DEBUG_OUTPUT);
     // set the projection matrix
-
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     

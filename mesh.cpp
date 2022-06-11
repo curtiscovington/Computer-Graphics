@@ -51,6 +51,6 @@ void Mesh::Draw(Shader& shader, const glm::mat4& viewProjectionMatrix)
     // glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &i);
     // printf("VBO ID: %d\n", i);
     // make sure glDrawElements will not segment fault
-    printf("m_indices.size(): %d\n", m_indices.size());
+    // printf("m_indices.size(): %d\n", m_indices.size());
     glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
 }
