@@ -46,6 +46,8 @@ public:
         }
         glfwMakeContextCurrent(m_window);
         glViewport(0, 0, 640, 480);
+        // set glew experimental
+        glewExperimental = GL_TRUE;
         auto result = glewInit();
         if (result != GLEW_OK)
         {
