@@ -38,7 +38,7 @@ private:
         const glm::mat4& GetViewProjectionMatrix() const { return m_viewProjectionMatrix; }
 
         void Move(const glm::vec3& offset) { m_position += offset; RecalculateViewMatrix(); }
-        void LookAt(const glm::vec3& target) { m_viewMatrix = glm::lookAt(m_position, target, glm::vec3(0.0f, 1.0f, 0.0f)); RecalculateViewMatrix(); }
+        void LookAt(const glm::vec3& target) { m_viewMatrix = glm::lookAt(m_position, target, glm::vec3(0.0f, 0.0f, 0.0f)); RecalculateViewMatrix(); }
 
         float GetFov() const { return m_fov; }
 

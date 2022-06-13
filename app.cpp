@@ -1,31 +1,18 @@
 #include "app.h"
-#include <GL/glew.h>    // include GLEW and new version of GL on Windows
+#include "gl.h"
 #include <GLFW/glfw3.h> // GLFW helper library
 #include <stdio.h>
 #include <stdlib.h>
 #include <fstream>
 #include "input_manager.h"
 
-static void debug_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
-{
-    fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n", (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, severity, message);
-}
-
 static void resize_callback(GLFWwindow *window, int width, int height)
 {
-  //  Set viewport as entire window
-//    glViewport(0,0, width, height);
-//    //  Select projection matrix
-//    glMatrixMode(GL_PROJECTION);
-//    //  Set projection to identity
-//    glLoadIdentity();
-//    //  Orthogonal projection:  unit cube adjusted for aspect ratio
-//    double asp = (height>0) ? (double)width/height : 1;
-//    glOrtho(-asp,+asp, -1.0,+1.0, -1.0,+1.0);
-//    //  Select model view matrix
-//    glMatrixMode(GL_MODELVIEW);
-//    //  Set model view to identity
-//    glLoadIdentity();
+//    Set viewport as entire window
+   glViewport(0,0, width, height);
+  
+    App* app = (App*) glfwGetWindowUserPointer(window);
+    app->WindowResizeCallback(width, height);
 }
 
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -33,14 +20,24 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
     InputManager::GetInstance().KeyCallback(key, scancode, action, mods);
 }
 
+static void cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
+{
+    InputManager::GetInstance().CursorPositionCallback(xpos, ypos);
+}
+
+// static void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
+// {
+//     InputManager::GetInstance().MouseButtonCallback(button, action, mods);
+// }
 
 void App::Run()
 {   
-    // debug callback    
-    glDebugMessageCallback(debug_callback, nullptr);
+    glfwSetWindowUserPointer(m_window, this);
+    
     // set resize handler (to handle window resizes)
     glfwSetWindowSizeCallback(m_window, resize_callback);
     glfwSetKeyCallback(m_window, key_callback);
+    glfwSetCursorPosCallback(m_window, cursor_position_callback);
 
     // get version info
     printf("GL_VERSION: %s\n", glGetString(GL_VERSION));
@@ -48,7 +45,6 @@ void App::Run()
     printf("GL_VENDOR: %s\n", glGetString(GL_VENDOR));
     printf("GL_RENDERER: %s\n", glGetString(GL_RENDERER));
 
-    glEnable(GL_DEBUG_OUTPUT);
     // set the projection matrix
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -57,13 +53,22 @@ void App::Run()
     {
         // wipe the drawing surface clear
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // set the projection matrix
-       
+
+        // sky blue clear color
+        glClearColor(0.0f, 0.5f, 1.0f, 1.0f);
+        // calculate delta time
+        float dt = glfwGetTime();
+        glfwSetTime(0.0);
         // call update 
-        Update();
+        Update(dt);
         
         glfwSwapBuffers(m_window);
         glfwPollEvents();
     }
 
+}
+
+void App::WindowResizeCallback(int width, int height)
+{
+    m_camera->Resize(width, height);
 }

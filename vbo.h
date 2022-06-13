@@ -2,7 +2,7 @@
 #define VBO_H
 // inspired by https://www.youtube.com/watch?v=NUZF_5RKfS4
 #include<glm/glm.hpp>
-#include <GL/glew.h>
+#include "gl.h"
 #include<vector>
 
 // Structure to standardize the vertices used in the meshes
@@ -11,6 +11,7 @@ struct Vertex
 	glm::vec3 position;
 	glm::vec3 normal;
 	glm::vec4 color;
+	glm::vec2 texCoord;
 };
 
 

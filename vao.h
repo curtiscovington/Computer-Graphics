@@ -1,7 +1,7 @@
 #ifndef VAO_H
 #define VAO_H
 // inspired by https://www.youtube.com/watch?v=NUZF_5RKfS4
-#include <GL/glew.h>
+#include "gl.h"
 #include "vbo.h"
 
 class VAO 

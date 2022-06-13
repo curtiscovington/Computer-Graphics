@@ -40,17 +40,20 @@ enum class Key
     Right,
     Up,
     Down,
-    Space
+    Space,
+    Comma,
+    Period,
 };
 
 class InputManager
 {
     
     private:
-    InputManager() {};
+        InputManager() {};
         std::unordered_map<Key, bool> m_keyMap;
         std::unordered_map<MouseButton, bool> m_mouseButtonMap;
-        
+        double m_mouseX;
+        double m_mouseY;           
     public:
         
         static InputManager& GetInstance() {
@@ -59,8 +62,14 @@ class InputManager
         }
 
         bool IsKeyDown(Key key) { return m_keyMap[key]; }
+        bool ConsumeKeyDown(Key key) { if (m_keyMap[key]) { m_keyMap[key] = false; return true; } return false; }
         bool IsMouseButtonDown(MouseButton button) { return m_mouseButtonMap[button]; }
 
+        void CursorPositionCallback(double xpos, double ypos) {
+            m_mouseX = xpos;
+            m_mouseY = ypos;
+        }
+        
         void KeyCallback(int key, int scancode, int action, int mods) {
             if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) 
                 m_keyMap[Key::Space] = true;
@@ -124,6 +133,10 @@ class InputManager
                 m_keyMap[Key::Up] = true;
             if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
                 m_keyMap[Key::Down] = true;
+            if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
+                m_keyMap[Key::Comma] = true;
+            if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
+                m_keyMap[Key::Period] = true;
 
             // Release
             if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE) 
@@ -188,6 +201,10 @@ class InputManager
                 m_keyMap[Key::Up] = false;
             if (key == GLFW_KEY_DOWN && action == GLFW_RELEASE)
                 m_keyMap[Key::Down] = false;
+            if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
+                m_keyMap[Key::Comma] = false;
+            if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
+                m_keyMap[Key::Period] = false;
             
         }
 };
