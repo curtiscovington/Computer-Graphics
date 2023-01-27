@@ -1,7 +1,0 @@
-make.exe --dry-run --keep-going --print-directory
-make.exe: Entering directory `c:/msys64/home/curti/dev/hw2/Computer-Graphics-HW2'
-g++ -c -O3 -Wall -DUSEGLEW  hw2.cpp -I./include
- 
-g++ -O3 -Wall -DUSEGLEW -o hw2 model.o texture.o stb_image.o camera.o mesh.o ebo.o vao.o vbo.o perspective_camera.o shader.o orthographic_camera.o app.o hw2.o  -lglfw3 -lfreeglut -lglew32 -lglu32 -lopengl32 -lm 
-make.exe: Leaving directory `c:/msys64/home/curti/dev/hw2/Computer-Graphics-HW2'
- 

@@ -1,14 +1,23 @@
-# Homework 2
-EXE=hw2
+VPATH=src:src/*
+EXE=hw1
+
+BIN    	:= ./bin
+SRC     := ./src
+OBJ	 	:= ./obj
+# Find all source files cpp
+SRCS  	:= $(wildcard $(SRC)/*.cpp) $(wildcard $(SRC)/*/*.cpp)
+# Replace the source path with the object path
+OBJS    := $(patsubst $(SRC)/%.cpp,$(OBJ)/%.o,$(SRCS))
 
 # Main target
 all: $(EXE)
 
 #  Msys/MinGW
 ifeq "$(OS)" "Windows_NT"
+MKDIR := md
 CFLG=-O3 -Wall -DUSEGLEW
 LIBS=-lglfw3 -lfreeglut -lglew32 -lglu32 -lopengl32 -lm
-CLEAN=rm -f *.exe *.o *.a
+CLEAN=del /Q /S *.exe *.o *.a
 else
 #  OSX
 ifeq "$(shell uname)" "Darwin"
@@ -20,20 +29,30 @@ else
 CFLG=-O3 -Wall -DGL_GLEXT_PROTOTYPES
 LIBS=-lglfw -lglut -lGLU -lGL -lm
 endif
+
+MKDIR := mkdir -p
 #  OSX/Linux/Unix/Solaris
 CLEAN=rm -f $(EXE) *.o *.a
 endif
 
 # Compile rules
-.c.o:
-	gcc -c $(CFLG)  $<
-.cpp.o:
-	g++ -c $(CFLG)  $< -I./include
+$(OBJ)/%.o: $(SRC)/%.cpp | $(OBJ)
+	g++ -c $(CFLG) $< -I./include -o $@
 
 #  Link
-hw2: model.o texture.o stb_image.o camera.o mesh.o ebo.o vao.o vbo.o perspective_camera.o shader.o orthographic_camera.o app.o hw2.o
-	g++ $(CFLG) -o $@ $^  $(LIBS) 
+$(EXE): $(OBJS) | $(BIN)
+	g++ $(CFLG) $^ -o $(BIN)/$@ $(LIBS) 
 
 #  Clean
 clean:
 	$(CLEAN)
+
+# Create directories
+$(BIN):
+	$(MKDIR) $@
+
+$(OBJ):
+	$(MKDIR) "$@/engine"
+
+run: $(EXE)
+	$(BIN)/$(EXE)
