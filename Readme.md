@@ -1,8 +1,8 @@
-# Computer Graphics HW1 - Curtis Covington
+# Computer Graphics HW2 - Curtis Covington
 
-`bin/hw1.exe` is the make output
+`bin/hw2.exe` is the make output
 
-Entry point `src/hw1.cpp`
+Entry point `src/main.cpp`
 
 Shaders are in the shaders folder.
 
@@ -12,19 +12,19 @@ Shaders are in the shaders folder.
 
 `make run` should compile and run the program
 
+`make clean` will clean the project structure
+
 
 # Controls
 
 Space = Toggle Perspective and Orthographic
 
-Arrow Keys or WASD = Camera Movement
+Arrow Keys or WASD = Movement
 
-QE                 = Move Camera In/Move Camera Out
-
-IJKL               = Camera Rotation
+Right Click and Mouse Move = Camera Movement
 
 Escape             = Close Program
 
 # Approximate Time
 
-5ish hours. Most fixing my project structure. Then playing with the shader.
+6 hours. Updating project structure, allowing for camera movement by mouse, and playing with the shader.

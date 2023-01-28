@@ -25,6 +25,11 @@ static void cursor_position_callback(GLFWwindow *window, double xpos, double ypo
     InputManager::GetInstance().CursorPositionCallback(xpos, ypos);
 }
 
+static void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
+{
+    InputManager::GetInstance().MouseButtonCallback(button, action, mods);
+}
+
 // static void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
 // {
 //     InputManager::GetInstance().MouseButtonCallback(button, action, mods);
@@ -38,7 +43,7 @@ void App::Run()
     glfwSetWindowSizeCallback(m_window, resize_callback);
     glfwSetKeyCallback(m_window, key_callback);
     glfwSetCursorPosCallback(m_window, cursor_position_callback);
-
+    glfwSetMouseButtonCallback(m_window, mouse_button_callback);
     // get version info
     // printf("GL_VERSION: %s\n", glGetString(GL_VERSION));
     // printf("GL_SHADING_LANGUAGE_VERSION: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));

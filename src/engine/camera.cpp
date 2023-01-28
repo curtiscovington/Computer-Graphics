@@ -1,6 +1,6 @@
 #include <engine/camera.h>
 #include <glm/gtc/matrix_transform.hpp>
-
+#include <cstdio>
 Camera::Camera(int width, int height, glm::vec3 position)
 {
     m_position = position;
@@ -14,7 +14,15 @@ glm::mat4 Camera::GetPerspViewProjectionMatrix()
 {
     glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
+    
+    // calculate view based on pitch and yaw
+    m_forward.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+    m_forward.y = sin(glm::radians(m_pitch));
+    m_forward.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+    m_forward = glm::normalize(m_forward);
 
+    // printf("m_forward: %f, %f, %f, %f, %f\n", m_forward.x, m_forward.y, m_forward.z, m_yaw, m_pitch);
+    
     view = glm::lookAt(m_position, m_position + m_forward, m_up);
     projection = glm::perspective(glm::radians(m_fov), (float)m_width / (float)m_height, 1.0f, 400.0f);
     
@@ -35,6 +43,12 @@ glm::mat4 Camera::GetOrthoViewProjectionMatrix()
     float right = aspectRatio * zoom;
     float bottom = -1.0f * zoom;
     float top = 1.0f * zoom;
+
+    // calculate view based on pitch and yaw
+    m_forward.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+    m_forward.y = sin(glm::radians(m_pitch));
+    m_forward.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+    m_forward = glm::normalize(m_forward);
 
     view = glm::lookAt(m_position, m_position + m_forward, m_up);
     projection = glm::ortho(left, right, bottom, top, 0.1f, 100.0f);

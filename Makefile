@@ -1,5 +1,5 @@
 VPATH=src:src/*
-EXE=hw1
+EXE=hw2
 
 BIN    	:= ./bin
 SRC     := ./src
@@ -10,7 +10,7 @@ SRCS  	:= $(wildcard $(SRC)/*.cpp) $(wildcard $(SRC)/*/*.cpp)
 OBJS    := $(patsubst $(SRC)/%.cpp,$(OBJ)/%.o,$(SRCS))
 
 # Main target
-all: $(EXE)
+all: main
 
 #  Msys/MinGW
 ifeq "$(OS)" "Windows_NT"
@@ -40,8 +40,8 @@ $(OBJ)/%.o: $(SRC)/%.cpp | $(OBJ)
 	g++ -c $(CFLG) $< -I./include -o $@
 
 #  Link
-$(EXE): $(OBJS) | $(BIN)
-	g++ $(CFLG) $^ -o $(BIN)/$@ $(LIBS) 
+main: $(OBJS) | $(BIN)
+	g++ $(CFLG) $^ -o $(BIN)/$(EXE) $(LIBS) 
 
 #  Clean
 clean:
@@ -54,5 +54,5 @@ $(BIN):
 $(OBJ):
 	$(MKDIR) "$@/engine"
 
-run: $(EXE)
+run: main
 	$(BIN)/$(EXE)

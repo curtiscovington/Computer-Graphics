@@ -9,14 +9,18 @@ private:
     glm::vec3 m_forward;
     glm::vec3 m_up;
 
+    float m_sensitivity = 0.1f;
+    float m_yaw = -90.0f;
+    float m_pitch = 0.0f;
+    float m_roll = 0.0f;
+    float m_zoom = 1.0f;
+
     int m_width;
     int m_height;
 
     float m_fov = 45.0f;
     
     float m_speed = 0.1f;
-    float m_sensitivity = 100.0f;
-    float m_zoom = 1.0f;
     bool m_viewEntireWorld = false;
 
     
@@ -32,6 +36,19 @@ public:
     Camera(int width, int height, glm::vec3 position);
 
     void SetSpeed(float speed) { m_speed = speed; }
+    void SetSensitivity(float sensitivity) { m_sensitivity = sensitivity; }
+    void SetZoom(float zoom) { m_zoom = zoom; }
+    void SetPitch(float pitch) { m_pitch = pitch; }
+    void SetYaw(float yaw) { m_yaw = yaw; }
+    void SetRoll(float roll) { m_roll = roll; }
+
+    float GetSpeed() const { return m_speed; }
+    float GetSensitivity() const { return m_sensitivity; }
+    float GetZoom() const { return m_zoom; }
+    float GetPitch() const { return m_pitch; }
+    float GetYaw() const { return m_yaw; }
+    float GetRoll() const { return m_roll; }
+
     glm::vec3 GetPosition() const { return m_position; }
     glm::vec3 GetForward() const { return m_forward; }
     glm::vec3 GetUp() const { return m_up; }

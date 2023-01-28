@@ -80,12 +80,28 @@ class InputManager
                 m_lastMouseY = m_mouseY;
                 m_firstMouseMovement = false;
             } else {
-                m_lastMouseX = xpos;
-                m_lastMouseY = ypos;
+                m_lastMouseX = m_mouseX;
+                m_lastMouseY = m_lastMouseY;
             }
 
             m_mouseX = xpos;
             m_mouseY = ypos;
+        }
+
+        void MouseButtonCallback(int button, int action, int mods) {
+            if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+                m_mouseButtonMap[MouseButton::Left] = true;
+            if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+                m_mouseButtonMap[MouseButton::Right] = true;
+            if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_PRESS)
+                m_mouseButtonMap[MouseButton::Middle] = true;
+
+            if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+                m_mouseButtonMap[MouseButton::Left] = false;
+            if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
+                m_mouseButtonMap[MouseButton::Right] = false;
+            if (button == GLFW_MOUSE_BUTTON_MIDDLE && action == GLFW_RELEASE)
+                m_mouseButtonMap[MouseButton::Middle] = false;
         }
         
         void KeyCallback(int key, int scancode, int action, int mods) {
