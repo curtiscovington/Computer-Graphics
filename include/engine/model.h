@@ -28,6 +28,7 @@ class Model
         void SetScale(glm::vec3 scale);
         void SetPosition(glm::vec3 position);
         void SetRotation(glm::vec3 rotation);
+        void SetShader(Shader* shader) { m_shader = shader; }
         void Rotate(glm::vec3 rotation);
 
         void ToggleVisibility() { m_visible = !m_visible; }

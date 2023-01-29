@@ -89,9 +89,10 @@ const GLuint CUBE_INDICIES[] = {
 class HW2App : public App
 {
 public:
-    Shader *m_shader;
+    int m_currentShader = 0;
+    std::vector<Shader*> m_shaders = std::vector<Shader*>();
     Shader *m_lightShader;
-    std::vector<Model*> *m_models = new std::vector<Model*>();
+    std::vector<Model*> m_models = std::vector<Model*>();
     bool m_ortho = false;
     float m_time = 0.0f;
 
@@ -102,20 +103,22 @@ public:
     HW2App() : App("HW2: Curtis Covington")
     {
         // create the shader
-        m_shader = new Shader("shaders/procedural.vert.glsl", "shaders/procedural.frag.glsl", "shaders/default.geom.glsl");
+        m_shaders.push_back(new Shader("shaders/procedural.vert.glsl", "shaders/checker.frag.glsl", "shaders/default.geom.glsl"));
+        m_shaders.push_back(new Shader("shaders/procedural.vert.glsl", "shaders/dot.frag.glsl", "shaders/default.geom.glsl"));
+
         m_lightShader = new Shader("shaders/light.vert.glsl", "shaders/light.frag.glsl");
 
-        Model* model = CreateCube(m_shader);
+        Model* model = CreateCube(m_shaders[0]);
         model->SetPosition(glm::vec3(1.0f, 1.0f, 0.0f) * 2.0f);
-        m_models->push_back(model);
+        m_models.push_back(model);
 
         model = CreateCube(m_lightShader);
         model->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-        m_models->push_back(model);
+        m_models.push_back(model);
 
-        model = CreateCube(m_shader);
+        model = CreateCube(m_shaders[0]);
         model->SetPosition(glm::vec3(-1.0f, -1.0f, 0.0f) * 2.0f);
-        m_models->push_back(model);
+        m_models.push_back(model);
     }
 
     ~HW2App() {}
@@ -130,9 +133,12 @@ public:
         m_time += deltaTime;
         
         // set shader uniforms
-        m_shader->SetUniform("dim", glm::vec3(GetCamera()->GetWidth(), GetCamera()->GetHeight(), 1.0f));
-        m_shader->SetUniform("u_time", m_time);
-        m_shader->SetUniform("u_cameraPos", GetCamera()->GetPosition());
+        for (Shader* shader : m_shaders)
+        {
+            shader->SetUniform("u_time", m_time);
+            shader->SetUniform("u_cameraPos", GetCamera()->GetPosition());
+            shader->SetUniform("dim", glm::vec3(GetCamera()->GetWidth(), GetCamera()->GetHeight(), 1.0f));
+        }
 
         HandleInput();
         glm::mat4 vpm;
@@ -145,7 +151,7 @@ public:
             vpm = GetCamera()->GetPerspViewProjectionMatrix();
         }
 
-        for (Model* model : *m_models)
+        for (Model* model : m_models)
         {
             model->Draw(vpm);
         }
@@ -190,6 +196,13 @@ public:
         }
 
     
+        if (InputManager::GetInstance().ConsumeKeyDown(Key::Tab))
+        {
+            m_currentShader++;
+            m_currentShader = m_currentShader % m_shaders.size();
+            m_models[0]->SetShader(m_shaders[m_currentShader]);
+            m_models[2]->SetShader(m_shaders[m_currentShader]);
+        }
 
         if (InputManager::GetInstance().ConsumeKeyDown(Key::Space))
         {
@@ -233,7 +246,10 @@ public:
 
     void Shutdown()
     {
-        delete m_shader;
+        for (Shader* shader : m_shaders)
+        {
+            delete shader;
+        }
         App::Shutdown();
     }
 };

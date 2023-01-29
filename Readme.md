@@ -6,8 +6,6 @@ Entry point `src/main.cpp`
 
 Shaders are in the shaders folder.
 
-*The obj folder needs the empty engine folder, I have not been able to figure out how to make my make file auto generate it.*
-
 `make` will compile the executable into the bin folder
 
 `make run` should compile and run the program
@@ -19,7 +17,10 @@ Shaders are in the shaders folder.
 
 Space = Toggle Perspective and Orthographic
 
+Tab = Cycle Through Shaders
+
 Arrow Keys or WASD = Movement
+QE                 = Move Camera Up/Down
 
 Right Click and Mouse Move = Camera Movement
 

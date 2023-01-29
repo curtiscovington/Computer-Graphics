@@ -44,6 +44,7 @@ enum class Key
     Comma,
     Period,
     Escape,
+    Tab,
 };
 
 class InputManager
@@ -105,6 +106,8 @@ class InputManager
         }
         
         void KeyCallback(int key, int scancode, int action, int mods) {
+            if (key == GLFW_KEY_TAB && action == GLFW_PRESS)
+                m_keyMap[Key::Tab] = true;
             if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
                 m_keyMap[Key::Escape] = true;
             if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) 
@@ -175,6 +178,8 @@ class InputManager
                 m_keyMap[Key::Period] = true;
 
             // Release
+            if (key == GLFW_KEY_TAB && action == GLFW_RELEASE)
+                m_keyMap[Key::Tab] = false;
             if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) 
                 m_keyMap[Key::Escape] = false;
             if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE) 
