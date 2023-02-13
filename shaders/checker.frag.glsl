@@ -63,5 +63,5 @@ vec3 checker(in float u, in float v)
 
 void main()
 {
-    color = vec4(checker(v_texCoord.x + u_time, v_texCoord.y), 1.0) * vec4(1.0f) * pointLight();
+    color = vec4(checker(v_texCoord.x + u_time, v_texCoord.y + u_time), 1.0) * vec4(1.0f) * pointLight();
 }

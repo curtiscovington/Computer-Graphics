@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/compatibility.hpp>
 
 #include <engine/mesh.h>
 #include <engine/camera.h>
@@ -85,35 +86,42 @@ const GLuint CUBE_INDICIES[] = {
     6,
 };
 
-class HW1App : public App
+class HW4App : public App
 {
 public:
-    Shader *m_shader;
-    std::vector<Model*> *m_models = new std::vector<Model*>();
+    int m_currentShader = 0;
+    std::vector<Shader*> m_shaders = std::vector<Shader*>();
+    Shader *m_lightShader;
+    std::vector<Model*> m_models = std::vector<Model*>();
     bool m_ortho = false;
-    bool m_firstMouse = true;
+    float m_time = 0.0f;
+
     float m_lastX = 0.0f;
     float m_lastY = 0.0f;
+    bool m_firstMouse = true;
 
-    HW1App() : App("HW1: Curtis Covington")
+    HW4App() : App("HW4: Curtis Covington")
     {
         // create the shader
-        m_shader = new Shader("shaders/shader.vert.glsl", "shaders/shader.frag.glsl");
-        
-        Model* model = CreateCube(m_shader);
+        m_shaders.push_back(new Shader("shaders/procedural.vert.glsl", "shaders/checker.frag.glsl", "shaders/default.geom.glsl"));
+        m_shaders.push_back(new Shader("shaders/procedural.vert.glsl", "shaders/dot.frag.glsl", "shaders/default.geom.glsl"));
+
+        m_lightShader = new Shader("shaders/light.vert.glsl", "shaders/light.frag.glsl");
+
+        Model* model = CreateCube(m_shaders[0]);
         model->SetPosition(glm::vec3(1.0f, 1.0f, 0.0f) * 2.0f);
-        m_models->push_back(model);
+        m_models.push_back(model);
 
-        model = CreateCube(m_shader);
+        model = CreateCube(m_lightShader);
         model->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-        m_models->push_back(model);
+        m_models.push_back(model);
 
-        model = CreateCube(m_shader);
+        model = CreateCube(m_shaders[0]);
         model->SetPosition(glm::vec3(-1.0f, -1.0f, 0.0f) * 2.0f);
-        m_models->push_back(model);
+        m_models.push_back(model);
     }
 
-    ~HW1App() {}
+    ~HW4App() {}
 
     void Init()
     {
@@ -122,7 +130,16 @@ public:
 
     void Update(float deltaTime)
     {
-        m_shader->SetUniform("dim", glm::vec3(GetCamera()->GetWidth(), GetCamera()->GetHeight(), 1.0f));
+        m_time += deltaTime;
+        
+        // set shader uniforms
+        for (Shader* shader : m_shaders)
+        {
+            shader->SetUniform("u_time", m_time);
+            shader->SetUniform("u_cameraPos", GetCamera()->GetPosition());
+            shader->SetUniform("dim", glm::vec3(GetCamera()->GetWidth(), GetCamera()->GetHeight(), 1.0f));
+        }
+
         HandleInput();
         glm::mat4 vpm;
         if (m_ortho)
@@ -134,7 +151,7 @@ public:
             vpm = GetCamera()->GetPerspViewProjectionMatrix();
         }
 
-        for (Model* model : *m_models)
+        for (Model* model : m_models)
         {
             model->Draw(vpm);
         }
@@ -178,6 +195,14 @@ public:
             }
         }
 
+    
+        if (InputManager::GetInstance().ConsumeKeyDown(Key::Tab))
+        {
+            m_currentShader++;
+            m_currentShader = m_currentShader % m_shaders.size();
+            m_models[0]->SetShader(m_shaders[m_currentShader]);
+            m_models[2]->SetShader(m_shaders[m_currentShader]);
+        }
 
         if (InputManager::GetInstance().ConsumeKeyDown(Key::Space))
         {
@@ -221,9 +246,12 @@ public:
 
     void Shutdown()
     {
-      
-        delete m_shader;
-        
+        for (Shader* shader : m_shaders)
+        {
+            delete shader;
+        }
         App::Shutdown();
     }
 };
+
+

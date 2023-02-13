@@ -7,113 +7,58 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/compatibility.hpp>
 
 #include <engine/mesh.h>
 #include <engine/camera.h>
 #include <engine/texture.h>
 #include <engine/model.h>
 
-const float CUBE_VERTICES[] = {
-    -1.0f,
-    -1.0f,
-    1.0f,
-    1.0f,
-    -1.0f,
-    1.0f,
-    1.0f,
-    -1.0f,
-    -1.0f,
-    -1.0f,
-    -1.0f,
-    -1.0f,
-    -1.0f,
-    1.0f,
-    1.0f,
-    1.0f,
-    1.0f,
-    1.0f,
-    1.0f,
-    1.0f,
-    -1.0f,
-    -1.0f,
-    1.0f,
-    -1.0f,
-};
-
-const GLuint CUBE_INDICIES[] = {
-    // right face
-    6,
-    2,
-    1,
-    1,
-    5,
-    6,
-    // left face
-    7,
-    4,
-    0,
-    0,
-    3,
-    7,
-    // top face
-    6,
-    5,
-    4,
-    4,
-    7,
-    6,
-    // bottom face
-    2,
-    3,
-    0,
-    0,
-    1,
-    2,
-    // back face
-    5,
-    1,
-    0,
-    0,
-    4,
-    5,
-    // front face
-    6,
-    7,
-    3,
-    3,
-    2,
-    6,
-};
-
-class HW1App : public App
+class HW3App : public App
 {
 public:
-    Shader *m_shader;
-    std::vector<Model*> *m_models = new std::vector<Model*>();
-    bool m_ortho = false;
-    bool m_firstMouse = true;
+    int m_currentShader = 0;
+    std::vector<Shader*> m_shaders = std::vector<Shader*>();
+    std::vector<Model*> m_models = std::vector<Model*>();
+    bool m_ortho = true;
+    float m_time = 0.0f;
+
     float m_lastX = 0.0f;
     float m_lastY = 0.0f;
+    bool m_firstMouse = true;
 
-    HW1App() : App("HW1: Curtis Covington")
+    HW3App() : App("HW3: Curtis Covington")
     {
         // create the shader
-        m_shader = new Shader("shaders/shader.vert.glsl", "shaders/shader.frag.glsl");
+        m_shaders.push_back(new Shader("shaders/fullscreen.vert.glsl", "shaders/fullscreen.frag.glsl"));
+        m_shaders.push_back(new Shader("shaders/procedural.vert.glsl", "shaders/dot.frag.glsl", "shaders/default.geom.glsl"));
+
+        glm::vec2 t00(0.0f, 0.0f); // bottom left
+        glm::vec2 t01(0.0f, 1.0f); // top left
+        glm::vec2 t10(1.0f, 0.0f); // bottom right
+        glm::vec2 t11(1.0f, 1.0f); // top right
+
+        glm::vec4 color(1.0f);
+        // create a quad to render the screen in
+        std::vector<Vertex> vertices = {
+            Vertex{.position = glm::vec3(-1.0f, -1.0f, 0.0f), .normal = glm::vec3(0.0f, 0.0f, 1.0f), .color = color, .texCoord = t00},
+            Vertex{.position = glm::vec3(1.0f, -1.0f, 0.0f), .normal = glm::vec3(0.0f, 0.0f, 1.0f), .color = color, .texCoord = t10},
+            Vertex{.position = glm::vec3(-1.0f, 1.0f, 0.0f), .normal = glm::vec3(0.0f, 0.0f, 1.0f), .color = color, .texCoord = t01},
+            Vertex{.position = glm::vec3(1.0f, 1.0f, 0.0f), .normal = glm::vec3(0.0f, 0.0f, 1.0f), .color = color, .texCoord = t11},
+        };
+
+        std::vector<unsigned int> indices = { 0, 1, 2, 3, 2, 1 };
         
-        Model* model = CreateCube(m_shader);
-        model->SetPosition(glm::vec3(1.0f, 1.0f, 0.0f) * 2.0f);
-        m_models->push_back(model);
+        Mesh* mesh = new Mesh(vertices, indices, nullptr);
 
-        model = CreateCube(m_shader);
-        model->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-        m_models->push_back(model);
+        std::vector<Mesh*> meshes = std::vector<Mesh*>();
+        meshes.push_back(mesh);
 
-        model = CreateCube(m_shader);
-        model->SetPosition(glm::vec3(-1.0f, -1.0f, 0.0f) * 2.0f);
-        m_models->push_back(model);
+        // create the model
+        m_models.push_back(new Model(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), nullptr, nullptr, m_shaders[0], meshes));
     }
 
-    ~HW1App() {}
+    ~HW3App() {}
 
     void Init()
     {
@@ -122,7 +67,31 @@ public:
 
     void Update(float deltaTime)
     {
-        m_shader->SetUniform("dim", glm::vec3(GetCamera()->GetWidth(), GetCamera()->GetHeight(), 1.0f));
+        // calculate fps using delta time
+        static float fps = 0.0f;
+        static float fpsTimer = 0.0f;
+        fpsTimer += deltaTime;
+        if (fpsTimer > 0.25f)
+        {
+            fps = 1.0f / deltaTime;
+            fpsTimer = 0.0f;
+        }
+
+        // update the window title
+        char title[256];
+        sprintf(title, "HW3: Curtis Covington - FPS: %.2f", fps);
+        SetWindowTitle(title);
+
+        m_time += deltaTime;
+        
+        // set shader uniforms
+        for (Shader* shader : m_shaders)
+        {
+            shader->SetUniform("u_time", m_time);
+            shader->SetUniform("u_cameraPos", GetCamera()->GetPosition());
+            shader->SetUniform("dim", glm::vec3(GetCamera()->GetWidth(), GetCamera()->GetHeight(), 1.0f));
+        }
+
         HandleInput();
         glm::mat4 vpm;
         if (m_ortho)
@@ -134,7 +103,7 @@ public:
             vpm = GetCamera()->GetPerspViewProjectionMatrix();
         }
 
-        for (Model* model : *m_models)
+        for (Model* model : m_models)
         {
             model->Draw(vpm);
         }
@@ -178,6 +147,14 @@ public:
             }
         }
 
+    
+        if (InputManager::GetInstance().ConsumeKeyDown(Key::Tab))
+        {
+            m_currentShader++;
+            m_currentShader = m_currentShader % m_shaders.size();
+            m_models[0]->SetShader(m_shaders[m_currentShader]);
+            m_models[2]->SetShader(m_shaders[m_currentShader]);
+        }
 
         if (InputManager::GetInstance().ConsumeKeyDown(Key::Space))
         {
@@ -221,9 +198,12 @@ public:
 
     void Shutdown()
     {
-      
-        delete m_shader;
-        
+        for (Shader* shader : m_shaders)
+        {
+            delete shader;
+        }
         App::Shutdown();
     }
 };
+
+

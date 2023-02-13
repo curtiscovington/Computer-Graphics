@@ -2,7 +2,6 @@
 layout(location = 0) out vec4 color;
 
 in vec3 v_position;
-in vec4 v_color;
 in vec2 v_texCoord;
 in vec3 v_normal;
 

@@ -1,8 +1,8 @@
-#include "hw2.cpp"
+#include "hw4.cpp"
 
 int main(int argc, char *argv[])
 {
-    HW2App app;
+    HW4App app;
     app.Run();
     return 0;
 }

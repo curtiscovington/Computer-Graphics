@@ -12,6 +12,22 @@ Shaders are in the shaders folder.
 
 `make clean` will clean the project structure
 
+# Shaders
+
+fullscreen.frag.glsl - Was used for a bunch of experiments rending on a single quad.
+
+# Experiements
+
+I played with serveral different noise function implementions until I found one I was happy with.
+
+One of the biggest surprises for me was seeing no performance hit at all when looping through setting colors, I assume this was a compiler optimization. The second I added an if statement in I dropped from 160fps to about 5fps.
+
+I was able to improve results by playing with the step function. 
+
+I wanted to play with using the output of the fragment shader to do more cool things that I could benchmark but ran out of time.
+
+Biggest takeaway from this was in utilizing the step function over using an if statement.
+
 
 # Controls
 
@@ -25,7 +41,3 @@ QE                 = Move Camera Up/Down
 Right Click and Mouse Move = Camera Movement
 
 Escape             = Close Program
-
-# Approximate Time
-
-6 hours. Updating project structure, allowing for camera movement by mouse, and playing with the shader.

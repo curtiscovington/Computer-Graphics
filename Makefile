@@ -1,5 +1,5 @@
 VPATH=src:src/*
-EXE=hw2
+EXE=hw3
 
 BIN    	:= ./bin
 SRC     := ./src
@@ -16,7 +16,8 @@ all: main
 ifeq "$(OS)" "Windows_NT"
 MKDIR := md
 CFLG=-O3 -Wall -DUSEGLEW
-LIBS=-lglfw3 -lfreeglut -lglew32 -lglu32 -lopengl32 -lm
+INCLUDE=-IC:\VulkanSDK\1.3.239.0\Include
+LIBS=-LC:\VulkanSDK\1.3.239.0\Lib -lglfw3 -lvulkan-1 -lfreeglut -lglew32 -lglu32 -lopengl32 -lm
 CLEAN=del /Q /S *.exe *.o *.a
 else
 #  OSX
@@ -27,7 +28,7 @@ LIBS=-framework GLUT -framework OpenGL
 #  Linux/Unix/Solaris
 else
 CFLG=-O3 -Wall -DGL_GLEXT_PROTOTYPES
-LIBS=-lglfw -lglut -lGLU -lGL -lm
+LIBS=-lglfw -lvulkan -lglut -lGLU -lGL -lm -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
 endif
 
 MKDIR := mkdir -p
@@ -37,7 +38,7 @@ endif
 
 # Compile rules
 $(OBJ)/%.o: $(SRC)/%.cpp | $(OBJ)
-	g++ -c $(CFLG) $< -I./include -o $@
+	g++ -c $(CFLG) $< -I./include $(INCLUDE) -o $@
 
 #  Link
 main: $(OBJS) | $(BIN)
